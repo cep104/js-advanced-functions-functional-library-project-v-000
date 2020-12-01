@@ -8,19 +8,27 @@ const fi = (function() {
     // 2) calls alert properly on object values
     // 3) returns the original collection
     each: function(collection, callback) {
+      // collection is an array or an object 
+      // callback is the function so in this case alert.
       if (Array.isArray(collection)) {
+        // array [1,2,3,4]
+        // console.log( collection)
         collection.forEach(element => 
           callback(element)
         );
       } else { // collection is an Object
+        console.log(collection)
         for (const key in collection) {
-          if (collection.hasOwnProperty(key)) {
+          // if (collection.hasOwnProperty(key)) {
+            //object { one: 1, two: 2, three: 3, four: 4 }
             const element = collection[key];
-            callback(element)
-          }
+            // console.log(key) //one, two, three
+            // console.log(element) //1,2,3
+            callback(element) // alert(1), alert(2)
+          // }
         }
       }
-      return collection
+      return collection //return original collection
     },
 
     // 1) successfully returns a correctly populated array
@@ -28,7 +36,7 @@ const fi = (function() {
     //  2) successfully returns a correctly populated array from modified object values
     //  // does not modify the original object
     map: function(collection, callback) {
-      let newCollection = []
+      let newCollection = [] //new array to return it as a new array
 
       if (Array.isArray(collection)) {
         collection.forEach(element => 
@@ -42,18 +50,23 @@ const fi = (function() {
           }
         }
       }
+      // console.log(newCollection) array of collection 
       return newCollection
+      
     },
 
     // 1) returns the correct reduced value when passed an initial value
     // 2) returns the correct reduced value when not passed an initial value
     // 3) does not modify the original array
     reduce: function(collection, callback, acc) {
-      let total = (!!acc) ? acc : collection[0]
-      let i = (!!acc) ? 0 : 1
-
-      for (; i < collection.length; i++) {
+      console.log(acc)
+      let total = (acc) ? acc : collection[0] 
+      //if there is a acc start there otherwise start with first element in collection for reduce
+      let i = (acc) ? 0 : 1
+      //if there is an acc start the count at first element otherwise start at second.
+      for ( i; i < collection.length; i++) {
         total = callback(total, collection[i], collection)
+        //look at readme and how the callback is being used. 
       }
       return total
     },
@@ -69,6 +82,8 @@ const fi = (function() {
       for (let i = 0; i < collection.length; i++) {
         if (predicate(collection[i])) {
           return collection[i]
+          //running each number of the array through the function in the readme 
+          //once the function is even return that number
         }
       }
     },
@@ -108,20 +123,23 @@ const fi = (function() {
     // 1) returns the first element of the collection
     // 2) returns the first n elements of the collection when the second optional argument (n) is provided
     first: function(array, num) {
-      let n = (!!num) ? num : 1
+      let n = (num) ? num : 1
       let nArray = array.slice(0, n)
 
-      return (!!num) ? nArray : nArray[0]
+      return (num) ? nArray : nArray[0]
     },
 
     // Returns the last element of an array. Passing n will return the last n elements of the array.
     // 1) returns the last element of the collection
     // 2) returns the last n elements of the collection when the second optional argument (n) is provided
     last: function(array, num) {
-      let n = (!!num) ? -num : -1
+      let n = (num) ? -num : -1
+      //getting last element of array is -1
+      //if your getting multiple start on -that number so if n = 2 it would be -2
       let nArray = array.slice(n)
-
-      return (!!num) ? nArray : nArray[0]
+      // console.log(array.slice(-2))
+      // console.log(nArray[0]) returns first element of slice if function only wants one number
+      return (num) ? nArray : nArray[0]
     },
 
     // Returns a copy of the array with all falsy values removed. 
@@ -130,7 +148,8 @@ const fi = (function() {
       let compactArray = []
 
       for (const i of array) {
-        if (!!i) {
+        if (i) {
+          //if i = true push into new array
           compactArray.push(i)
         }
       }
@@ -144,58 +163,74 @@ const fi = (function() {
     // 3) correctly sorts arrays of integers with non-standard sort
     sortBy: function(array, callback) {
       let sortedArray = [...array]
-
+      // copies array
       return sortedArray.sort(function(a,b) {
         return callback(a) - callback(b)
       })
     },
+    // function compareNumbers(a, b) {
+      // return a - b;
+    // } how you can compare numbers using sort. 
 
-    unpack: function(receiver, arr) {
-      for (let val of arr)
-        receiver.push(val)
-    },
-
-    flatten: function(collection, shallow, newArr=[]) {
-      if (!Array.isArray(collection)) return newArr.push(collection)
-      if (shallow) {
-        for (let val of collection)
-          Array.isArray(val) ? this.unpack(newArr, val) : newArr.push(val)
-      } else {
-        for (let val of collection) {
-          this.flatten(val, false, newArr)
+ 
+        flatten: function flatten(array, shallow){
+      let newArr = []
+      for(var i in array){
+        if (shallow === true){
+          // console.log(array)
+          if(Array.isArray(array[i])) {
+            // console.log(array[i])
+              newArr = newArr.concat(array[i])
+          } else {
+              newArr.push(array[i])
+          }
+        }
+        else {
+          if(Array.isArray(array[i])) {
+            console.log(flatten(array[i]))
+              newArr = newArr.concat(flatten(array[i]))
+          } else {
+              newArr.push(array[i])
+          }
         }
       }
       return newArr
     },
+
+       // unpack: function(receiver, arr) {
+    //   for (let val of arr)
+    //     receiver.push(val)
+    // },
+
+    // flatten: function(collection, shallow, newArr=[]) {
+    //   console.log(shallow)
+    //   if (!Array.isArray(collection)) return newArr.push(collection)
+    //   if (shallow) {
+    //     for (let val of collection)
+    //       Array.isArray(val) ? this.unpack(newArr, val) : newArr.push(val)
+    //   } else {
+    //     for (let val of collection) {
+    //       this.flatten(val, false, newArr)
+    //     }
+    //   }
+    //   return newArr
+    // },
    
     // Produces a duplicate-free version of the array, using === to test object equality. 
     // In particular only the first occurrence of each value is kept.
-    uniqSorted: function(collection, iteratee) {
-      const sorted = [collection[0]]
-      for (let idx = 1; idx < collection.length; idx++) {
-        if (sorted[idx-1] !== collection[idx])
-          sorted.push(collection[idx])
-      }
-      return sorted
-    },
 
-    uniq: function(collection, sorted=false, iteratee=false) {
-      if (sorted) {
-        return fi.uniqSorted(collection, iteratee)
-      } else if (!iteratee) {
-        return Array.from(new Set(collection))
+
+     uniq: function(array, isSorted, callback) {
+      let uniqueArray
+      if (callback) {
+        let arr = [... array].map(element => callback(element))
+        uniqueArray = array.filter( (value, index, array) => arr.indexOf(callback
+          
+          (value)) === index);
       } else {
-        const modifiedVals = new Set()
-        const uniqVals = new Set()
-        for (let val of collection) {
-          const moddedVal = iteratee(val)
-          if (!modifiedVals.has(moddedVal)) {
-            modifiedVals.add(moddedVal)
-            uniqVals.add(val)
-          }
-        }
-        return Array.from(uniqVals)
+        uniqueArray = [...new Set(array)]
       }
+      return uniqueArray;
     },
     // Retrieve all the names of the object's own enumerable properties.
     keys: function(object) {
